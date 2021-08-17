@@ -7,6 +7,8 @@ from django.shortcuts import render
 from django.utils.html import format_html
 from django.utils import timezone
 
+from django.contrib.auth.models import Group, User
+
 from sample_app.models import *
 
 class QuestionInline(admin.StackedInline):
@@ -42,7 +44,7 @@ class QuestionPublishedListFilter(admin.SimpleListFilter):
         if self.value() == 'Unpublished':
             return queryset.filter(pub_date__gte=datetime.now())
 
-@admin.register(Author)
+# @admin.register(Author)
 class AuthorAdmin(admin.ModelAdmin):
     empty_value_display = 'Unknown'
     fieldsets = [
@@ -67,7 +69,7 @@ class AuthorAdmin(admin.ModelAdmin):
 
 
 
-@admin.register(Question)
+# @admin.register(Question)
 class QuestionAdmin(admin.ModelAdmin):
     class QuestionPublishedListFilter(admin.SimpleListFilter):
         # Human-readable title which will be displayed in the
@@ -132,9 +134,9 @@ class QuestionAdmin(admin.ModelAdmin):
                     QuestionPublishedListFilter ,  # custom filter
                     'refAuthor',
                    )
-    # autocomplete_fields = ['refAuthor']
+    autocomplete_fields = ['refAuthor']
     # OPPURE
-    raw_id_fields = ('refAuthor',)
+    #raw_id_fields = ('refAuthor',)
 
     def has_been_published(self, obj):
         present = datetime.now()
@@ -215,7 +217,7 @@ class ChoiceAdmin(admin.ModelAdmin):
     list_select_related = ('question', 'question__refAuthor',)
 
 
-@admin.register(AuthorClone)
+# @admin.register(AuthorClone) STO USANDO CUSTOM SITE
 class AuthorCloneAdmin(admin.ModelAdmin):
     fieldsets = [
         ("Author information", {'fields': ['name','createdDate','updatedDate']}), # se metto altri campi poi non ppsso cambiarli nel clone
@@ -225,7 +227,21 @@ class AuthorCloneAdmin(admin.ModelAdmin):
     readonly_fields = ('createdDate','updatedDate',)
     search_fields = ('name',)
 
+from django.contrib.admin import AdminSite
 
+## Custom admin site
+class MyUltimateAdminSite(AdminSite):
+    site_header = 'My Django Admin Ultimate Guide'
+    site_title = 'My Django Admin Ultimate Guide Administration'
+    index_title = 'Welcome to my "sample_app"'
 
-admin.site.register(Choice,ChoiceAdmin)
-admin.site.register(QuestionSummary)
+site = MyUltimateAdminSite()
+
+# admin.site.register(Choice,ChoiceAdmin)
+# admin.site.register(QuestionSummary)
+
+site.register(Author,AuthorAdmin)
+site.register(Question,QuestionAdmin)
+site.register(Choice,ChoiceAdmin)
+site.register(Group)
+site.register(User)

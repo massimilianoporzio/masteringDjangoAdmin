@@ -16,6 +16,16 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+from sample_app.admin import site
+admin.site = site
+admin.autodiscover()
+
 urlpatterns = [
     path('admin/', admin.site.urls),
 ]
+
+
+
+# admin.site.site_header = "Django Admin Ultimate Guide"
+# admin.site.site_title = "Django Admin Title"
+# admin.site.index_title = "Welcome to Ultimate Guide"
