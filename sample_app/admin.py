@@ -201,4 +201,16 @@ class ChoiceAdmin(admin.ModelAdmin):
     list_select_related = ('question', 'question__refAuthor',)
 
 
+@admin.register(AuthorClone)
+class AuthorCloneAdmin(admin.ModelAdmin):
+    fieldsets = [
+        ("Author information", {'fields': ['name']}), # se metto altri campi poi non ppsso cambiarli nel clone
+                                                # se nell'originale admin non erano in lista dei field / fieldsets
+    ]
+    list_display = ('name','createdDate','updatedDate',)
+    search_fields = ('name',)
+
+
+
 admin.site.register(Choice,ChoiceAdmin)
+admin.site.register(QuestionSummary)

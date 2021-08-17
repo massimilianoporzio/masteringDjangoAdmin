@@ -31,3 +31,19 @@ class Choice(models.Model):
 
     def __str__(self):
         return u'%s : %s' % (self.question, self.choice_text)
+
+# FA RIF A UNA VISTA SU DB NON UNA TABELLA DI CUI DJANGO HA IL CONTROLLO COMPLETO
+class QuestionSummary(models.Model):
+    month = models.DateField()
+    nbQuestionsByMonth = models.IntegerField()
+
+    class Meta:
+        managed = False # VEDI COMMENTO
+        db_table = 'app_questionsummary' #NOME DELLA VISTA (SU DB ora NON C'è)
+
+
+# E' un PROXY - MI FA VEDERE AuthorAdmin un'altra volta
+class AuthorClone(Author):
+    class Meta:
+        proxy=True
+        verbose_name_plural = "The Authors clone"
