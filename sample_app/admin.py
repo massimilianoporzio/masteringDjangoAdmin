@@ -9,6 +9,8 @@ from django.utils import timezone
 
 from sample_app.models import *
 
+class QuestionInline(admin.StackedInline):
+    model = Question
 
 class QuestionPublishedListFilter(admin.SimpleListFilter):
     # Human-readable title which will be displayed in the
@@ -44,12 +46,24 @@ class QuestionPublishedListFilter(admin.SimpleListFilter):
 class AuthorAdmin(admin.ModelAdmin):
     empty_value_display = 'Unknown'
     fieldsets = [
-        ("Author Info", {'fields': ['name']}),
+        ("Author Info", {'fields': ['name','createdDate','updatedDate']}),
     ]
     list_display = ('name', 'createdDate', 'updatedDate',)
     list_per_page = 20
 
     search_fields = ('name',) #serve anche per fare autocomplete in edit dalle classi che hanno Authore come ForeignKey
+    readonly_fields = ('createdDate', 'updatedDate',)
+    inlines = [QuestionInline,]
+
+    def save_model(self, request, obj, form, change):
+        print("Author saved by user '%s'" % request.user)
+        super().save_model(request, obj, form, change)
+
+    # override data sent to display
+    def get_queryset(self, request):
+        qs = super(AuthorAdmin, self).get_queryset(request)
+        # return qs.filter(name__startswith='j')
+        return qs
 
 
 
@@ -204,10 +218,11 @@ class ChoiceAdmin(admin.ModelAdmin):
 @admin.register(AuthorClone)
 class AuthorCloneAdmin(admin.ModelAdmin):
     fieldsets = [
-        ("Author information", {'fields': ['name']}), # se metto altri campi poi non ppsso cambiarli nel clone
+        ("Author information", {'fields': ['name','createdDate','updatedDate']}), # se metto altri campi poi non ppsso cambiarli nel clone
                                                 # se nell'originale admin non erano in lista dei field / fieldsets
     ]
     list_display = ('name','createdDate','updatedDate',)
+    readonly_fields = ('createdDate','updatedDate',)
     search_fields = ('name',)
 
 
