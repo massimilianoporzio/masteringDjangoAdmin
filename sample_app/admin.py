@@ -2,7 +2,7 @@ import csv
 from datetime import datetime, timedelta
 
 from django.contrib import admin
-from django.core.serializers import json
+import json
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Count
 from django.db.models.functions import TruncDay
@@ -50,7 +50,7 @@ class QuestionPublishedListFilter(admin.SimpleListFilter):
 
 # @admin.register(Author)
 class AuthorAdmin(admin.ModelAdmin):
-
+    # è la view per la lista degli ogetti Author
     def changelist_view(self, request, extra_context=None):
         # Aggregate new authors per day
         chart_data = (
@@ -68,6 +68,17 @@ class AuthorAdmin(admin.ModelAdmin):
         # Call the superclass changelist_view to render the page
         return super().changelist_view(request, extra_context=extra_context)
 
+    # questa è la vista per la pagina di EDIT della singola istanza di Author
+    def change_view(self, request, object_id, form_url='', extra_context=None):
+        nbQuestion = Question.objects.filter(refAuthor=object_id).count()
+        response_data = [nbQuestion]
+
+        extra_context = extra_context or {}
+
+        # Serialize and attach the chart data to the template contexz
+        as_json = json.dumps(response_data, cls=DjangoJSONEncoder)
+        extra_context = extra_context or {"nbQuestion": as_json}
+        return super().change_view(request, object_id, form_url, extra_context=extra_context, )
 
     empty_value_display = 'Unknown'
     fieldsets = [
