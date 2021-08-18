@@ -268,6 +268,7 @@ class MyUltimateAdminSite(AdminSite):
     site_header = 'My Django Admin Ultimate Guide'
     site_title = 'My Django Admin Ultimate Guide Administration'
     index_title = 'Welcome to my "sample_app"'
+    index_template = 'sample_app/templates/admin/my_index.html'
 
 site = MyUltimateAdminSite()
 
